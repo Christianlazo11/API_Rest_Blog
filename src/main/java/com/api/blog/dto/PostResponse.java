@@ -1,9 +1,6 @@
 package com.api.blog.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -11,10 +8,11 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class PostResponse {
     private List<PostDTO> content;
-    private int numPage;
-    private int sizePage;
+    private int pageNum;
+    private int pageSize;
     private Long totalElements;
     private int totalPages;
     private boolean lastPage;

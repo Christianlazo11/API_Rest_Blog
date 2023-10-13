@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
 import java.util.List;
 
 @Service
@@ -34,26 +33,24 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponse getAll(int numPage, int pageSize, String sortBy, String sortAsc) {
+    public PostResponse getAll(int pageNum, int pageSize, String sortBy, String sortAsc) {
         Sort sort = sortAsc.equalsIgnoreCase(Sort.Direction.ASC.name())
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
-        PageRequest pageable = PageRequest.of(numPage, pageSize, sort);
+        PageRequest pageable = PageRequest.of(pageNum, pageSize, sort);
 
         Page<Post> posts = postRepository.findAll(pageable);
-        //List<Post> posts = postRepository.findAll();
-
-        List<Post> listPosts = posts.getContent();
         List<PostDTO> content = posts.stream().map(this::mapPostDTO).toList();
 
-        PostResponse postResponse = new PostResponse();
-        postResponse.setContent(content);
-        postResponse.setNumPage(posts.getNumber());
-        postResponse.setSizePage(posts.getSize());
-        postResponse.setTotalElements(posts.getTotalElements());
-        postResponse.setTotalPages(posts.getTotalPages());
-        postResponse.setLastPage(posts.isLast());
+        PostResponse postResponse = PostResponse.builder()
+                .content(content)
+                .pageNum(posts.getNumber())
+                .pageSize(posts.getSize())
+                .totalElements(posts.getTotalElements())
+                .totalPages(posts.getTotalPages())
+                .lastPage(posts.isLast())
+                .build();
 
         return postResponse;
     }

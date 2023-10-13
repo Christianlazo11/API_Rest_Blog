@@ -20,11 +20,11 @@ public class PostController {
 
     @GetMapping()
     public ResponseEntity<PostResponse> getAll(
-            @RequestParam(value = "pageNo", defaultValue = AppConts.DEFAULT_PAGE_NUM, required = false) int numPag,
+            @RequestParam(value = "pageNo", defaultValue = AppConts.DEFAULT_PAGE_NUM, required = false) int pagNum,
             @RequestParam(value = "pageSize", defaultValue = AppConts.DEFAULT_PAGE_SIZE, required=false) int pageSize,
             @RequestParam(value = "sortBy", defaultValue = AppConts.DEFAULT_ORDER_BY, required = false) String sortBy,
             @RequestParam(value = "sortAsc", defaultValue = AppConts.DEFAULT_ORDER_ASC, required = false) String sortAsc) {
-        return new ResponseEntity<>(postService.getAll(numPag, pageSize, sortBy, sortAsc), HttpStatus.OK);
+        return new ResponseEntity<>(postService.getAll(pagNum, pageSize, sortBy, sortAsc), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

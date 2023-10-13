@@ -20,3 +20,9 @@ INSERT INTO posts (id, content, description, title) VALUES ("19", "BOOT19", "api
 INSERT INTO posts (id, content, description, title) VALUES ("20", "BOOT20", "api-rest20", "registro-20");
 
 
+INSERT INTO comments (id, post_id, body_message, email, name) VALUES ('1', '1', 'Excelente Herramienta', 'sofia@gmail.com', 'Sofia Cardenas');
+INSERT INTO comments (id, post_id, body_message, email, name) VALUES ('2', '1', 'Buen Material!', 'cristiano@gmail.com', 'Cristiano Ronaldo');
+INSERT INTO comments (id, post_id, body_message, email, name) VALUES ('3', '2', 'Excelente Servicio', 'lionel@gmail.com', 'Lionel Messi');
+INSERT INTO comments (id, post_id, body_message, email, name) VALUES ('4', '2', 'Mala atención', 'carlos@gmail.com', 'Carlos Tevez');
+
+
