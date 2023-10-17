@@ -3,11 +3,14 @@ package com.api.blog.service.impl;
 import com.api.blog.dto.CommentDTO;
 import com.api.blog.entities.Comment;
 import com.api.blog.entities.Post;
+import com.api.blog.exceptions.BlogAppException;
 import com.api.blog.exceptions.ResourceNotFoundException;
 import com.api.blog.repository.CommentRepository;
 import com.api.blog.repository.PostRepository;
 import com.api.blog.service.CommentService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +18,8 @@ import java.util.List;
 @Service
 public class CommentServiceImpl implements CommentService {
 
+    @Autowired
+    private ModelMapper modelMapper;
     @Autowired
     private CommentRepository commentRepository;
     @Autowired
@@ -41,28 +46,67 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentDTO getCommentById(Long postId, Long commentId) {
-        return null;
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new ResourceNotFoundException("Post", "id", postId)
+        );
+
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new ResourceNotFoundException("Comment", "id", commentId)
+        );
+
+        if(!comment.getPost().getId().equals(post.getId())) {
+            throw new BlogAppException(HttpStatus.BAD_REQUEST, "El comentario no pertenece a la publicación!");
+        }
+        return mapDTO(comment);
+    }
+
+    @Override
+    public CommentDTO updateComment(Long postId, Long commentId, CommentDTO commentDTO) {
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new ResourceNotFoundException("Post", "id", postId)
+        );
+
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new ResourceNotFoundException("Comment", "id", commentId)
+        );
+
+        if(!comment.getPost().getId().equals(post.getId())) {
+            throw new BlogAppException(HttpStatus.BAD_REQUEST, "El comentario no pertenece a la publicación!");
+        }
+
+        comment.setName(commentDTO.getName());
+        comment.setEmail(commentDTO.getEmail());
+        comment.setBodyMessage(commentDTO.getBodyMessage());
+
+        Comment commentUpdate = commentRepository.save(comment);
+
+        return mapDTO(commentUpdate);
+    }
+
+    @Override
+    public void deleteComment(Long postId, Long commentId) {
+        Post post = postRepository.findById(postId).orElseThrow(
+                () -> new ResourceNotFoundException("Post", "id", postId)
+        );
+
+        Comment comment = commentRepository.findById(commentId).orElseThrow(
+                () -> new ResourceNotFoundException("Comment", "id", commentId)
+        );
+
+        if(!comment.getPost().getId().equals(post.getId())) {
+            throw new BlogAppException(HttpStatus.BAD_REQUEST, "El comentario no pertenece a la publicación!");
+        }
+
+        commentRepository.deleteById(commentId);
     }
 
     private CommentDTO mapDTO(Comment comment) {
-        CommentDTO commentDTO = CommentDTO.builder()
-                .id(comment.getId())
-                .email(comment.getEmail())
-                .name(comment.getName())
-                .bodyMessage(comment.getBodyMessage())
-                .build();
-
+        CommentDTO commentDTO = modelMapper.map(comment, CommentDTO.class);
         return commentDTO;
     }
 
     private Comment mapComment(CommentDTO commentDTO) {
-        Comment comment = Comment.builder()
-                .id(commentDTO.getId())
-                .email(commentDTO.getEmail())
-                .name(commentDTO.getName())
-                .bodyMessage(commentDTO.getBodyMessage())
-                .build();
-
+        Comment comment = modelMapper.map(commentDTO, Comment.class);
         return comment;
     }
 }
